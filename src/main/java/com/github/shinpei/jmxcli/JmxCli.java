@@ -22,19 +22,24 @@ import java.util.Map;
 //-Dcom.sun.management.jmxremote.port=8007 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false
 
 public class JmxCli {
-    private static final Logger logger = LoggerFactory.getLogger(JmxCli.class);
-
+    private static final Logger logger = LoggerFactory.getLogger(JmxCli.class.getSimpleName());
+    private static final String DEFAULT_MBEAN_SERVER_PORT = "3000";
     static public void main(String[] args) {
         Options options = new Options();
-        Option domainOption = OptionBuilder.withArgName("domain name")
+        Option domainOption = Option.builder("domain").argName("domain name")
                 .hasArg()
-                .withDescription("use given domain to list")
-                .create("domain");
+                .desc("use given domain to list")
+                .build();
+        Option portOption = Option.builder("port").argName("port number")
+                .hasArg()
+                .desc("use given port to connect remote mbean server")
+                .build();
 
         Option helpOption = new Option("help", "print this message");
         options.addOption(helpOption);
         options.addOption(domainOption);
-
+        options.addOption(portOption);
+        String port = DEFAULT_MBEAN_SERVER_PORT;
         try {
             CommandLineParser parser = new DefaultParser();
             CommandLine line = parser.parse(options, args);
@@ -48,6 +53,9 @@ public class JmxCli {
                 String domain = line.getOptionValue("domain");
                 logger.info("Domain = {} ", domain);
             }
+            if (line.hasOption("port")) {
+                port = line.getOptionValue("port");
+            }
         } catch (ParseException e) {
             logger.error("Couldn't parse command line");
         }
@@ -55,7 +63,7 @@ public class JmxCli {
 
         try {
             Map<String, Void> env = new HashMap<String, Void>();
-            JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://:8007/jmxrmi");
+            JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://:"  + port + "/jmxrmi");
             JMXConnector connector = JMXConnectorFactory.connect(url, env);
             MBeanServerConnection connection = connector.getMBeanServerConnection();
             List<String> domains = new ArrayList<String >();
