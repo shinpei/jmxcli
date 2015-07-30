@@ -26,23 +26,8 @@ public class JmxCli {
     private static final Logger logger = LoggerFactory.getLogger(JmxCli.class.getSimpleName());
     private static final String DEFAULT_MBEAN_SERVER_PORT = "3000";
     static public void main(String[] args) {
-        Options options = new Options();
-        Option domainOption = Option.builder("domain").argName("domain name")
-                .hasArg()
-                .desc("use given domain to list")
-                .build();
-        Option portOption = Option.builder("port").argName("port number")
-                .hasArg()
-                .desc("use given port to connect remote mbean server")
-                .build();
 
-        Option helpOption = new Option("help", "print this message");
-        Option versionOption = new Option("version", "print version");
-
-        options.addOption(helpOption);
-        options.addOption(domainOption);
-        options.addOption(portOption);
-        options.addOption(versionOption);
+        Options options = CommandLineOptions.getCommandLineOptions();
         String port = DEFAULT_MBEAN_SERVER_PORT;
         try {
             CommandLineParser parser = new DefaultParser();
