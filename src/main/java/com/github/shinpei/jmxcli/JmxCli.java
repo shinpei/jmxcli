@@ -13,6 +13,7 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
 
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,9 +37,12 @@ public class JmxCli {
                 .build();
 
         Option helpOption = new Option("help", "print this message");
+        Option versionOption = new Option("version", "print version");
+
         options.addOption(helpOption);
         options.addOption(domainOption);
         options.addOption(portOption);
+        options.addOption(versionOption);
         String port = DEFAULT_MBEAN_SERVER_PORT;
         try {
             CommandLineParser parser = new DefaultParser();
@@ -47,6 +51,14 @@ public class JmxCli {
                 // help
                 HelpFormatter formatter = new HelpFormatter();
                 formatter.printHelp("jmxlist", options);
+                return;
+            }
+            if (line.hasOption("version")) {
+                // version
+                PrintWriter pw = new PrintWriter(System.out);
+                pw.print("version ");
+                pw.println(JmxCliConfig.getVersion());
+                pw.flush();
                 return;
             }
             if (line.hasOption("domain")) {
