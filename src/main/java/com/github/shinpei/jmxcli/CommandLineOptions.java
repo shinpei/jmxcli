@@ -24,6 +24,12 @@ public class CommandLineOptions {
                 .hasArg()
                 .desc("use given attribute name for fetching value")
                 .build();
+        Option refreshRateOption = Option.builder("s").argName("refresh rate")
+                .hasArg()
+                .desc("use given milliseconds for refreshing value")
+                .build();
+
+
 
         Option helpOption = new Option("help", "print this message");
         Option versionOption = new Option("version", "print version");
@@ -34,6 +40,7 @@ public class CommandLineOptions {
         options.addOption(versionOption);
         options.addOption(onOption);
         options.addOption(attrOption);
+        options.addOption(refreshRateOption);
 
         return  options;
     }

@@ -9,6 +9,8 @@ import javax.management.MalformedObjectNameException;
 import java.io.PrintWriter;
 import java.util.Map;
 
+import static com.github.shinpei.jmxcli.Printer.*;
+
 //-Dcom.sun.management.jmxremote.port=8007 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false
 
 
@@ -26,6 +28,7 @@ public class JmxCli {
 
         Options options = CommandLineOptions.getCommandLineOptions();
         String port = DEFAULT_MBEAN_SERVER_PORT;
+
         try {
             CommandLineParser parser = new JmxCliCommandLineParser();
             CommandLine line = parser.parse(options, args);
@@ -37,16 +40,13 @@ public class JmxCli {
             }
             if (line.hasOption("version")) {
                 // version
-                PrintWriter pw = new PrintWriter(System.out);
-                pw.print("version ");
-                pw.println(JmxCliConfig.getVersion());
-                pw.flush();
+                P("version {}", JmxCliConfig.getVersion());
                 return;
             }
             JmxCliContext.Builder builder = JmxCliContext.builder();
             if (line.hasOption("domain")) {
                 String domain = line.getOptionValue("domain");
-                logger.info("Domain = {} ", domain);
+                logger.debug("Domain = {} ", domain);
             }
             if (line.hasOption("port")) {
                 port = line.getOptionValue("port");
@@ -61,10 +61,12 @@ public class JmxCli {
             if (line.hasOption("attribute")) {
                 builder.attrName(line.getOptionValue("attribute"));
             }
+
+
             // create context
             JmxCliContext ctx = builder.port(port).build();
             // parse subcommand
-            logger.info("args {}", line.getArgList());
+            logger.debug("args {}", line.getArgList());
             for (String command : line.getArgList()) {
 
                 CommandHandler hdlr = handlers.get(command);

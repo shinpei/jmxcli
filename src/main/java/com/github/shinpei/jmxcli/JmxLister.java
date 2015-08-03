@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+import static com.github.shinpei.jmxcli.Printer.*;
 
 public class JmxLister implements CommandHandler {
 
@@ -21,8 +22,7 @@ public class JmxLister implements CommandHandler {
             ObjectName name = new ObjectName(domain + ":*");
             for (Object obj : connection.queryMBeans(name, null)) {
                 ObjectInstance objectInstance = (ObjectInstance)obj;
-                logger.info(" + {}", objectInstance.getObjectName());
-                //logger.info("Class : {}", objectInstance.getClassName() );
+                P(" + {}", objectInstance.getObjectName());
             }
         } catch (MalformedObjectNameException e) {
             e.printStackTrace();
@@ -37,7 +37,7 @@ public class JmxLister implements CommandHandler {
             MBeanServerConnection connection = CommandHandlerUtil.getMBeanServerConnection(context);
             List<String> domains = new ArrayList<String >();
             for (String name: connection.getDomains()) {
-                logger.info("{} ", name);
+                P("{} ", name);
                 domains.add(name);
                 queryWithDomain(connection, name);
             }

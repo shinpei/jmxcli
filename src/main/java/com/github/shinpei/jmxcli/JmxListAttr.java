@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.management.*;
 import java.io.IOException;
-
+import static com.github.shinpei.jmxcli.Printer.*;
 public class JmxListAttr implements CommandHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(JmxListAttr.class.getSimpleName());
@@ -14,9 +14,9 @@ public class JmxListAttr implements CommandHandler {
             MBeanServerConnection connecter = CommandHandlerUtil.getMBeanServerConnection(ctx);
             MBeanInfo info  = connecter.getMBeanInfo(ctx.objectName);
             MBeanAttributeInfo[] attrs = info.getAttributes();
-            logger.info("Attributes for {}", ctx.objectName);
+            P("Attributes for {}", ctx.objectName);
             for (MBeanAttributeInfo attr: attrs) {
-                logger.info("+ {}", attr.getName());
+                P("+ {}", attr.getName());
             }
         } catch (IntrospectionException e) {
             e.printStackTrace();

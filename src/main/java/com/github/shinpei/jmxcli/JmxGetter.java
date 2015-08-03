@@ -14,7 +14,6 @@ public class JmxGetter implements CommandHandler {
     public void handle(JmxCliContext ctx) {
         try {
             MBeanServerConnection connector = CommandHandlerUtil.getMBeanServerConnection(ctx);
-
             Object obj = connector.getAttribute(ctx.objectName, ctx.attrName);
             logger.info("{}, {} = {}", ctx.objectName, ctx.attrName, obj.toString());
             P("{}", obj.toString());
