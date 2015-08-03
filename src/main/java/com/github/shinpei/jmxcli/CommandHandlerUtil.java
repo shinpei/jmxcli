@@ -22,4 +22,9 @@ public class CommandHandlerUtil {
         return connector.getMBeanServerConnection();
     }
 
+    static public void closeConnection () throws IOException {
+        connector.close();
+        connector = null;
+    }
+
 }
