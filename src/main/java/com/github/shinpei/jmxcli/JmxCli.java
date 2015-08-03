@@ -1,15 +1,27 @@
 package com.github.shinpei.jmxcli;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.management.MalformedObjectNameException;
 import java.io.PrintWriter;
+import java.util.Map;
 
 //-Dcom.sun.management.jmxremote.port=8007 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false
+
 
 public class JmxCli {
     private static final Logger logger = LoggerFactory.getLogger(JmxCli.class.getSimpleName());
     private static final String DEFAULT_MBEAN_SERVER_PORT = "3000";
+    static final Map<String, CommandHandler> handlers = ImmutableMap.<String, CommandHandler>builder()
+            .put("ls", new JmxLister())
+            .put("attr", new JmxListAttr())
+            .put("get", new JmxGetter())
+            .put("mget", new JmxMultiGetter())
+            .build();
+
     static public void main(String[] args) {
 
         Options options = CommandLineOptions.getCommandLineOptions();
@@ -31,6 +43,7 @@ public class JmxCli {
                 pw.flush();
                 return;
             }
+            JmxCliContext.Builder builder = JmxCliContext.builder();
             if (line.hasOption("domain")) {
                 String domain = line.getOptionValue("domain");
                 logger.info("Domain = {} ", domain);
@@ -38,21 +51,34 @@ public class JmxCli {
             if (line.hasOption("port")) {
                 port = line.getOptionValue("port");
             }
-
+            if (line.hasOption("objectname")) {
+                try {
+                    builder.objectName(line.getOptionValue("objectname"));
+                } catch (MalformedObjectNameException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (line.hasOption("attribute")) {
+                builder.attrName(line.getOptionValue("attribute"));
+            }
             // create context
-            JmxCliContext ctx = JmxCliContext.builder().port(port).build();
+            JmxCliContext ctx = builder.port(port).build();
             // parse subcommand
             logger.info("args {}", line.getArgList());
             for (String command : line.getArgList()) {
-                if ("list".equals(command)) {
-                    JmxLister lister = new JmxLister(ctx);
-                    lister.list();
-                }
 
+                CommandHandler hdlr = handlers.get(command);
+                if (hdlr != null) {
+                    hdlr.handle(ctx);
+                    // should be a single command
+                    break;
+                } else {
+                    logger.error("Cannot found handler for command name '{}'", command);
+                }
             }
 
         } catch (ParseException e) {
-            logger.error("Couldn't parse command line");
+            logger.error("Couldn't parse command line {}", e);
         }
 
     }

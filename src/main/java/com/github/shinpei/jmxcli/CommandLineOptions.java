@@ -15,6 +15,15 @@ public class CommandLineOptions {
                 .hasArg()
                 .desc("use given port to connect remote mbean server")
                 .build();
+        Option onOption = Option.builder("objectname").argName("object name")
+                .hasArg()
+                .desc("use given object name for fetching value")
+                .build();
+
+        Option attrOption = Option.builder("attribute").argName("attribute name")
+                .hasArg()
+                .desc("use given attribute name for fetching value")
+                .build();
 
         Option helpOption = new Option("help", "print this message");
         Option versionOption = new Option("version", "print version");
@@ -23,6 +32,8 @@ public class CommandLineOptions {
         options.addOption(domainOption);
         options.addOption(portOption);
         options.addOption(versionOption);
+        options.addOption(onOption);
+        options.addOption(attrOption);
 
         return  options;
     }
