@@ -7,6 +7,7 @@ public class JmxCliContext {
     String port;
     ObjectName objectName;
     String attrName;
+    int refreshRate;
 
     public static Builder builder() {
         return new Builder();
@@ -16,6 +17,8 @@ public class JmxCliContext {
         String port;
         ObjectName objectName;
         String attrName;
+        int refreshRate;
+
         public Builder() {
 
         }
@@ -33,12 +36,18 @@ public class JmxCliContext {
             this.attrName = attrName;
             return this;
         }
+        public Builder refreshRate(String refreshRate) {
+            this.refreshRate = Integer.parseInt(refreshRate);
+            return this;
+
+        }
 
         public JmxCliContext build() {
             JmxCliContext ctx = new JmxCliContext();
             ctx.port = port;
             ctx.objectName = objectName;
             ctx.attrName = attrName;
+            ctx.refreshRate = refreshRate;
             return ctx;
         }
 

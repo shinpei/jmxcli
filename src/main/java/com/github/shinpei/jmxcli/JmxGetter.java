@@ -4,28 +4,43 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.management.*;
-import java.io.IOException;
+
+import java.util.concurrent.*;
+
 import static com.github.shinpei.jmxcli.Printer.*;
 
 
 public class JmxGetter implements CommandHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(JmxGetter.class.getSimpleName());
-    public void handle(JmxCliContext ctx) {
-        try {
+
+    class GetFuture implements Callable<String> {
+        JmxCliContext ctx;
+        GetFuture(JmxCliContext ctx) {
+            this.ctx = ctx;
+        }
+
+        public String call() throws Exception {
             MBeanServerConnection connector = CommandHandlerUtil.getMBeanServerConnection(ctx);
             Object obj = connector.getAttribute(ctx.objectName, ctx.attrName);
             logger.info("{}, {} = {}", ctx.objectName, ctx.attrName, obj.toString());
-            P("{}", obj.toString());
-        } catch (IOException e) {
+
+            return obj.toString();
+        }
+    }
+    public void handle(JmxCliContext ctx) {
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        Future<String > future = service.submit(new GetFuture(ctx));
+
+        try {
+            for (;;) {
+                P("{}", future.get());
+                logger.debug("sleeping {} milliseconds", ctx.refreshRate );
+                Thread.currentThread().sleep(ctx.refreshRate);
+            }
+        } catch (InterruptedException e) {
             e.printStackTrace();
-        } catch (AttributeNotFoundException e) {
-            e.printStackTrace();
-        } catch (MBeanException e) {
-            e.printStackTrace();
-        } catch (ReflectionException e) {
-            e.printStackTrace();
-        } catch (InstanceNotFoundException e) {
+        } catch (ExecutionException e) {
             e.printStackTrace();
         }
     }

@@ -11,9 +11,6 @@ import java.util.Map;
 
 import static com.github.shinpei.jmxcli.Printer.*;
 
-//-Dcom.sun.management.jmxremote.port=8007 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false
-
-
 public class JmxCli {
     private static final Logger logger = LoggerFactory.getLogger(JmxCli.class.getSimpleName());
     private static final String DEFAULT_MBEAN_SERVER_PORT = "3000";
@@ -61,8 +58,9 @@ public class JmxCli {
             if (line.hasOption("attribute")) {
                 builder.attrName(line.getOptionValue("attribute"));
             }
-
-
+            if (line.hasOption("s")) {
+                builder.refreshRate(line.getOptionValue("s"));
+            }
             // create context
             JmxCliContext ctx = builder.port(port).build();
             // parse subcommand

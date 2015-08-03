@@ -10,11 +10,14 @@ import java.util.Map;
 
 public class CommandHandlerUtil {
 
+    static JMXConnector connector = null;
     static public MBeanServerConnection getMBeanServerConnection(JmxCliContext context) throws IOException {
         Map<String, Void> env = new HashMap<String, Void>();
 
         JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://:" + context.port + "/jmxrmi");
-        JMXConnector connector = JMXConnectorFactory.connect(url, env);
+        if (connector == null) {
+            connector = JMXConnectorFactory.connect(url, env);
+        }
         // We should close connector
         return connector.getMBeanServerConnection();
     }
