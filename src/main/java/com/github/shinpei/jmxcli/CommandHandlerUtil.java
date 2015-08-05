@@ -14,7 +14,7 @@ public class CommandHandlerUtil {
     static public MBeanServerConnection getMBeanServerConnection(JmxCliContext context) throws IOException {
         Map<String, Void> env = new HashMap<String, Void>();
 
-        JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://:" + context.port + "/jmxrmi");
+        JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + context.host + ":" + context.port + "/jmxrmi");
         if (connector == null) {
             connector = JMXConnectorFactory.connect(url, env);
         }

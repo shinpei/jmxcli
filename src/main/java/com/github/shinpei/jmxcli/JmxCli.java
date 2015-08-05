@@ -13,7 +13,9 @@ import static com.github.shinpei.jmxcli.Printer.*;
 
 public class JmxCli {
     private static final Logger logger = LoggerFactory.getLogger(JmxCli.class.getSimpleName());
+    private static final String DEFAULT_MBEAN_SERVER_HOST = "localhost";
     private static final String DEFAULT_MBEAN_SERVER_PORT = "3000";
+
     static final Map<String, CommandHandler> handlers = ImmutableMap.<String, CommandHandler>builder()
             .put("ls", new JmxLister())
             .put("attr", new JmxListAttr())
@@ -24,8 +26,8 @@ public class JmxCli {
     static public void main(String[] args) {
 
         Options options = CommandLineOptions.getCommandLineOptions();
+        String host = DEFAULT_MBEAN_SERVER_HOST;
         String port = DEFAULT_MBEAN_SERVER_PORT;
-
         try {
             CommandLineParser parser = new JmxCliCommandLineParser();
             CommandLine line = parser.parse(options, args);
@@ -45,6 +47,9 @@ public class JmxCli {
                 String domain = line.getOptionValue("domain");
                 logger.debug("Domain = {} ", domain);
             }
+            if (line.hasOption("host")) {
+                host = line.getOptionValue("host");
+            }
             if (line.hasOption("port")) {
                 port = line.getOptionValue("port");
             }
@@ -62,7 +67,7 @@ public class JmxCli {
                 builder.refreshRate(line.getOptionValue("s"));
             }
             // create context
-            JmxCliContext ctx = builder.port(port).build();
+            JmxCliContext ctx = builder.host(host).port(port).build();
             // parse subcommand
             logger.debug("args {}", line.getArgList());
             for (String command : line.getArgList()) {

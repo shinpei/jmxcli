@@ -11,6 +11,11 @@ public class CommandLineOptions {
                 .hasArg()
                 .desc("use given domain to list")
                 .build();
+
+        Option hostOption = Option.builder("host").argName("host name")
+                .hasArg()
+                .desc("use given hostname to connect remote mbean server")
+                .build();
         Option portOption = Option.builder("port").argName("port number")
                 .hasArg()
                 .desc("use given port to connect remote mbean server")
@@ -37,6 +42,7 @@ public class CommandLineOptions {
         options.addOption(helpOption);
         options.addOption(domainOption);
         options.addOption(portOption);
+        options.addOption(hostOption);
         options.addOption(versionOption);
         options.addOption(onOption);
         options.addOption(attrOption);
